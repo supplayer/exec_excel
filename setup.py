@@ -5,7 +5,6 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="exec-excel",
-    version="0.0.1",
     author="Supplayer",
     author_email="x254724521@hotmail.com",
     description="Import or export Excel.",
@@ -19,5 +18,7 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     python_requires=">=3.6",
-    install_requires=['pandas']
+    install_requires=['pandas'],
+    setup_requires=['setuptools_scm'],
+    use_scm_version=True
 )
