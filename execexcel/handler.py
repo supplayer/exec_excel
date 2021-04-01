@@ -2,7 +2,7 @@ import pandas as pd
 import time
 
 
-class Excel:
+class ExecExcel:
     def __init__(self, path, sheet='Sheet1', nana=None):
         """
         read xlsx and csv
