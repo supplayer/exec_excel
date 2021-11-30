@@ -10,12 +10,14 @@ class ExecExcel:
         :param sheet: str
         :param nana: null display NaNa/None/''
         """
-        if path.split('.')[-1] == 'csv':
-            self.excel_file = pd.read_csv(path)
+        self.path = path
+        self.sheet = sheet
+        if self.path.split('.')[-1] == 'csv':
+            self.excel_file = pd.read_csv(self.path)
             ex_data = self.excel_file
         else:
-            self.excel_file = pd.ExcelFile(path)
-            ex_data = self.excel_file.parse(sheet)
+            self.excel_file = pd.ExcelFile(self.path)
+            ex_data = self.excel_file.parse(self.sheet)
         self.ex_data = ex_data.where(
             ex_data.notnull(), nana)
 
@@ -44,14 +46,12 @@ class ExecExcel:
                 else:
                     yield {index: value}
 
-    @staticmethod
-    def write(data: list, filename, path='~/Desktop/'):
+    def write(self, data: list, filename):
         """
         Write data to excel.
         :param data: dict in list
         :param filename: create excel file name
-        :param path: excel file save path, default will savet to desktop.
         """
 
         pd_data = pd.concat([pd.DataFrame(item, index=[0]) for item in data], axis=0)
-        pd_data.to_excel(path+filename+f'_{int(time.time())}.xlsx', index=False, sheet_name='data')
+        pd_data.to_excel(self.path+filename+f'_{int(time.time())}.xlsx', index=False, sheet_name=self.sheet)
