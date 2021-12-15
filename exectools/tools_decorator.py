@@ -30,4 +30,64 @@ class Retry:
 
 
 class RunTime:
-    pass
+    logger = print
+
+    @classmethod
+    def loop_time(cls, loop_times: int = None, loop_sleep: int = 0):
+        def decorator(func):
+            @functools.wraps(func)
+            def wrapper(*args, **kwargs):
+                n, flag, start = 1, True, time.time()
+                (cls.__rangetime(loop_times, n, func, loop_sleep, *args, **kwargs) if loop_times else
+                 cls.__whiletime(flag, n, func, loop_sleep, *args, **kwargs))
+                end = time.time()
+                cls.logger(
+                    '\n##########################################',
+                    '\nSTART:', round(start, 2), 'END:', round(end, 2),
+                    '\nTOTAL TIME:', round(end - start, 2),
+                    '\n##########################################')
+            return wrapper
+        return decorator
+
+    @classmethod
+    def run_time(cls):
+
+        def decorator(func):
+            @functools.wraps(func)
+            def wrapper(*args, **kwargs):
+                start = time.time()
+                res = func(*args, **kwargs)
+                end = time.time()
+                cls.logger(
+                    '\n##########################################'
+                    f'\nSTART: {round(start, 2)} END: {round(end, 2)}'
+                    f'\nTOTAL TIME: {round(end - start, 2)}'
+                    '\n##########################################',
+                    f'\nRESULT: {res}')
+                return res
+            return wrapper
+        return decorator
+
+    @classmethod
+    def __rangetime(cls, times, n, func, sleep, *args, **kwargs):
+        res = True
+        for _ in range(times):
+            if res:
+                start = time.time()
+                res = func(*args, **kwargs)
+                cls.logger(f'RESULT: {res or "Range loop: Nothing returned."}\n'
+                           f'Times: {n}, Time_cost: {time.time() - start}\n')
+                time.sleep(sleep)
+                n += 1
+            else:
+                break
+
+    @classmethod
+    def __whiletime(cls, flag, n, func, sleep, *args, **kwargs):
+        while flag:
+            start = time.time()
+            res = func(*args, **kwargs)
+            cls.logger(f'RESULT: {res or "While loop: Nothing returned."}\n'
+                       f'Times: {n}, Time_cost: {time.time() - start}\n')
+            time.sleep(sleep)
+            n += 1
