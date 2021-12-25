@@ -44,6 +44,7 @@ class RunTime:
                 end = time.time()
                 logger(
                     f'\n##########################################'
+                    f'\nFUNC: {func.__name__}'
                     f'\nSTART: {round(start, 2)} END: {round(end, 2)}'
                     f'\nTOTAL TIME: {round(end - start, 2)}'
                     f'\n##########################################'
@@ -64,6 +65,7 @@ class RunTime:
                 end = time.time()
                 logger(
                     f'\n##########################################'
+                    f'\nFUNC: {func.__name__}'
                     f'\nSTART: {round(start, 2)} END: {round(end, 2)}'
                     f'\nTOTAL TIME: {round(end - start, 2)}'
                     f'\n##########################################')
