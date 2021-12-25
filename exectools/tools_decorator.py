@@ -59,16 +59,21 @@ class RunTime:
             @functools.wraps(func)
             def wrapper(*args, **kwargs):
                 n, flag, start = 1, True, time.time()
-                (cls.__rangetime(loop_times, n, func, loop_sleep, logger, show_short_result, *args, **kwargs)
-                 if loop_times else
-                 cls.__whiletime(flag, n, func, loop_sleep, logger, show_short_result, *args, **kwargs))
-                end = time.time()
-                logger(
-                    f'\n##########################################'
-                    f'\nFUNC: {func.__name__}'
-                    f'\nSTART: {round(start, 2)} END: {round(end, 2)}'
-                    f'\nTOTAL TIME: {round(end - start, 2)}'
-                    f'\n##########################################')
+                try:
+                    (cls.__rangetime(loop_times, n, func, loop_sleep, logger, show_short_result, *args, **kwargs)
+                     if loop_times else
+                     cls.__whiletime(flag, n, func, loop_sleep, logger, show_short_result, *args, **kwargs))
+
+                except KeyboardInterrupt:
+                    pass
+                finally:
+                    end = time.time()
+                    logger(
+                        f'\n##########################################'
+                        f'\nFUNC: {func.__name__}'
+                        f'\nSTART: {round(start, 2)} END: {round(end, 2)}'
+                        f'\nTOTAL TIME: {round(end - start, 2)}'
+                        f'\n##########################################')
             return wrapper
         return decorator
 
@@ -79,9 +84,10 @@ class RunTime:
             if res:
                 start = time.time()
                 res = func(*args, **kwargs)
+                end = time.time()
                 show_res = f'{res}'[:show_short_result]+'......' if show_short_result else f'{res}'
                 logger(f'RESULT: {show_res or "Range loop: Nothing returned."}\n'
-                       f'Times: {n}, Time_cost: {time.time() - start}\n')
+                       f'Times: {n}, Time_cost: {end - start}\n')
                 time.sleep(sleep)
                 n += 1
             else:
@@ -92,8 +98,9 @@ class RunTime:
         while flag:
             start = time.time()
             res = func(*args, **kwargs)
+            end = time.time()
             show_res = f'{res}'[:show_short_result] + '......' if show_short_result else f'{res}'
             logger(f'RESULT: {show_res or "While loop: Nothing returned."}\n'
-                   f'Times: {n}, Time_cost: {time.time() - start}\n')
+                   f'Times: {n}, Time_cost: {end - start}\n')
             time.sleep(sleep)
             n += 1
