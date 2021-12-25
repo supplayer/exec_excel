@@ -58,7 +58,8 @@ class RunTime:
         def decorator(func):
             @functools.wraps(func)
             def wrapper(*args, **kwargs):
-                n, flag, start = 1, True, time.time()
+                n, flag = {'time': 1}, True
+                start = time.time()
                 try:
                     (cls.__rangetime(loop_times, n, func, loop_sleep, logger, show_short_result, *args, **kwargs)
                      if loop_times else
@@ -68,11 +69,12 @@ class RunTime:
                     pass
                 finally:
                     end = time.time()
+                    n['time'] -= 1
                     logger(
                         f'\n##########################################'
                         f'\nFUNC: {func.__name__}'
                         f'\nSTART: {round(start, 2)} END: {round(end, 2)}'
-                        f'\nTOTAL TIME: {round(end - start, 2)}'
+                        f'\nTOTAL TIME: {round(end - start, 2)} RUN TIMES: {n["time"]}'
                         f'\n##########################################')
             return wrapper
         return decorator
@@ -87,9 +89,9 @@ class RunTime:
                 end = time.time()
                 show_res = f'{res}'[:show_short_result]+'......' if show_short_result else f'{res}'
                 logger(f'RESULT: {show_res or "Range loop: Nothing returned."}\n'
-                       f'Times: {n}, Time_cost: {end - start}\n')
+                       f'Times: {n["time"]}, Time_cost: {end - start}\n')
                 time.sleep(sleep)
-                n += 1
+                n["time"] += 1
             else:
                 break
 
@@ -101,6 +103,6 @@ class RunTime:
             end = time.time()
             show_res = f'{res}'[:show_short_result] + '......' if show_short_result else f'{res}'
             logger(f'RESULT: {show_res or "While loop: Nothing returned."}\n'
-                   f'Times: {n}, Time_cost: {end - start}\n')
+                   f'Times: {n["time"]}, Time_cost: {end - start}\n')
             time.sleep(sleep)
-            n += 1
+            n["time"] += 1
