@@ -74,7 +74,7 @@ class RunTime:
                         f'\n##########################################'
                         f'\nFUNC: {func.__name__}'
                         f'\nSTART: {round(start, 2)} END: {round(end, 2)}'
-                        f'\nTOTAL TIME: {round(end - start, 2)} RUN TIMES: {n["time"]}'
+                        f'\nTOTAL_TIME: {round(end - start, 2)} RUN_TIMES: {n["time"]}'
                         f'\n##########################################')
             return wrapper
         return decorator
