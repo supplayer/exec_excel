@@ -20,8 +20,18 @@ def test_loop_range_res(sleep=1):
     return [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
 
 
+@RunTime.timeout(6)
+def test_timeout(sleep=5):
+    time.sleep(sleep)
+    return 'test timeout.'
+
+
 if __name__ == '__main__':
     pass
     # test_run_time_res()
-    test_loop_while_res()
+    # test_loop_while_res()
     # test_loop_range_res()
+    try:
+        print(test_timeout())
+    except Exception as e:
+        print(e)
