@@ -72,13 +72,15 @@ class RunTime:
                 start = time.time()
                 res = func(*args, **kwargs)
                 end = time.time()
+                str_res = f'{res}'
                 logger(
                     f'\n##########################################'
                     f'\nFUNC: {func.__name__}'
                     f'\nSTART: {round(start, 2)} END: {round(end, 2)}'
                     f'\nTOTAL TIME: {round(end - start, 2)}'
                     f'\n##########################################'
-                    f'\nRESULT: '+(f'{res}'[:show_short_result]+'......' if show_short_result else f'{res}'))
+                    f'\nRESULT: '+(str_res[:show_short_result]+'......'
+                                   if show_short_result and len(str_res) > show_short_result else str_res))
                 return res
             return wrapper
         return decorator
@@ -117,9 +119,11 @@ class RunTime:
                 start = time.time()
                 res = func(*args, **kwargs)
                 end = time.time()
-                show_res = f'{res}'[:show_short_result]+'......' if show_short_result else f'{res}'
-                logger(f'RESULT: {show_res or "Range loop: Nothing returned."}\n'
-                       f'Times: {n["time"]}, Time_cost: {end - start}\n')
+                str_res = f'{res}'
+                show_res = (f'{res}'[:show_short_result]+'......'
+                            if show_short_result and len(str_res) > show_short_result else f'{res}')
+                logger(f'Times: {n["time"]}, Time_cost: {end - start}\n'
+                       f'RESULT: {show_res or "Range loop: Nothing returned."}\n')
                 time.sleep(sleep)
                 n["time"] += 1
             else:
@@ -131,9 +135,11 @@ class RunTime:
             start = time.time()
             res = func(*args, **kwargs)
             end = time.time()
-            show_res = f'{res}'[:show_short_result] + '......' if show_short_result else f'{res}'
-            logger(f'RESULT: {show_res or "While loop: Nothing returned."}\n'
-                   f'Times: {n["time"]}, Time_cost: {end - start}\n')
+            str_res = f'{res}'
+            show_res = (f'{res}'[:show_short_result] + '......'
+                        if show_short_result and len(str_res) > show_short_result else f'{res}')
+            logger(f'Times: {n["time"]}, Time_cost: {end - start}\n'
+                   f'RESULT: {show_res or "While loop: Nothing returned."}\n')
             time.sleep(sleep)
             n["time"] += 1
 
