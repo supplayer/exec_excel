@@ -34,27 +34,28 @@ class ThreadKiller(threading.Thread):
 
 class Retry:
     @classmethod
-    def trying(cls, retry_times: int = 3, retry_sleep: int = 0, retry_exceptions: tuple = None, logger=print):
+    def trying(cls, retry_times: int = 3, retry_sleep: int = 0, retry_exceptions: tuple = None, logger=print,
+               sleep_func=time.sleep):
         def decorator(func):
             @functools.wraps(func)
             def wrapper(*args, **kwargs):
                 try:
                     return func(*args, **kwargs)
                 except (retry_exceptions or Exception) as e:
-                    return cls.__retry(func, retry_times, e, retry_sleep, logger, *args, **kwargs)
+                    return cls.__retry(func, retry_times, e, retry_sleep, logger, sleep_func, *args, **kwargs)
             return wrapper
         return decorator
 
     @classmethod
-    def __retry(cls, func, retry_times, error, retry_sleep, logger, *args, **kwargs):
+    def __retry(cls, func, retry_times, error, retry_sleep, logger, sleep_func=time.sleep, *args, **kwargs):
         if retry_times >= 1:
             try:
                 retry_times -= 1
                 logger(f'Retry remaining times: {retry_times}; Will sleep {retry_sleep}s; Error: {error};')
-                time.sleep(retry_sleep)
+                sleep_func(retry_sleep)
                 return func(*args, **kwargs)
             except Exception as e:
-                return cls.__retry(func, retry_times, e, retry_sleep, logger, *args, **kwargs)
+                return cls.__retry(func, retry_times, e, retry_sleep, logger, sleep_func, *args, **kwargs)
         else:
             raise
 
@@ -86,16 +87,18 @@ class RunTime:
         return decorator
 
     @classmethod
-    def loop_time(cls, loop_times: int = None, loop_sleep: int = 0, logger=print, show_short_result: int = None):
+    def loop_time(cls, loop_times: int = None, loop_sleep: int = 0, logger=print, show_short_result: int = None,
+                  sleep_func=time.sleep):
         def decorator(func):
             @functools.wraps(func)
             def wrapper(*args, **kwargs):
                 n, flag = {'time': 1}, True
                 start = time.time()
                 try:
-                    (cls.__rangetime(loop_times, n, func, loop_sleep, logger, show_short_result, *args, **kwargs)
+                    (cls.__rangetime(loop_times, n, func, loop_sleep, logger, show_short_result, sleep_func,
+                                     args, **kwargs)
                      if loop_times else
-                     cls.__whiletime(flag, n, func, loop_sleep, logger, show_short_result, *args, **kwargs))
+                     cls.__whiletime(flag, n, func, loop_sleep, logger, show_short_result, sleep_func, *args, **kwargs))
 
                 except KeyboardInterrupt:
                     pass
@@ -112,7 +115,8 @@ class RunTime:
         return decorator
 
     @classmethod
-    def __rangetime(cls, times, n, func, sleep, logger=print, show_short_result: int = None, *args, **kwargs):
+    def __rangetime(cls, times, n, func, sleep, logger=print, show_short_result: int = None, sleep_func=time.sleep,
+                    *args, **kwargs):
         res = True
         for _ in range(times):
             if res:
@@ -124,13 +128,14 @@ class RunTime:
                             if show_short_result and len(str_res) > show_short_result else f'{res}')
                 logger(f'Times: {n["time"]}, Time_cost: {end - start}\n'
                        f'RESULT: {show_res or "Range loop: Nothing returned."}\n')
-                time.sleep(sleep)
+                sleep_func(sleep)
                 n["time"] += 1
             else:
                 break
 
     @classmethod
-    def __whiletime(cls, flag, n, func, sleep, logger=print, show_short_result: int = None, *args, **kwargs):
+    def __whiletime(cls, flag, n, func, sleep, logger=print, show_short_result: int = None, sleep_func=time.sleep,
+                    *args, **kwargs):
         while flag:
             start = time.time()
             res = func(*args, **kwargs)
@@ -140,7 +145,7 @@ class RunTime:
                         if show_short_result and len(str_res) > show_short_result else f'{res}')
             logger(f'Times: {n["time"]}, Time_cost: {end - start}\n'
                    f'RESULT: {show_res or "While loop: Nothing returned."}\n')
-            time.sleep(sleep)
+            sleep_func(sleep)
             n["time"] += 1
 
     @classmethod
