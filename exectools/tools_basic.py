@@ -21,7 +21,7 @@ class TimeSection:
         :return: timestamp
         """
         time_delta = timedelta(**{time_type: time_delta})
-        timestamp = (datetime.now() - time_delta).timestamp()
+        timestamp = (datetime.now() + time_delta).timestamp()
         return cls.timestamp_point(timestamp, time_type, res_func)
 
     @classmethod
