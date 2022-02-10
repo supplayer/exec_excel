@@ -16,11 +16,11 @@ class ExecImport:
 
 
 class ExecExport:
-    def __init__(self, path='~/Desktop/'):
+    def __init__(self, path):
         self.path = Tools.extend_path(path)
 
-    def to_json(self, data, filename):
-        with open(self.path+f'{filename}.json', 'w') as f:
+    def to_json(self, data):
+        with open(self.path, 'w') as f:
             dump(data, f)
 
     def to_excel(self, data: list, sheet='Sheet1', file_path=None, index=False, axis=0, index_col=None, **kwargs):
