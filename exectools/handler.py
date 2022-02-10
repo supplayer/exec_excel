@@ -11,8 +11,9 @@ class ExecImport:
         with open(self.path, 'r') as f:
             return load(f)
 
-    def from_excel(self, sheet='Sheet1', axis=0, index_col=None, **kwargs) -> iter:
-        return ExecExcel(self.path).read(sheet, axis, index_col, **kwargs)
+    def from_excel(self, sheet='Sheet1', axis=0, index_col=None,
+                   orient='records', empty=False, nana=None, **kwargs) -> iter:
+        return ExecExcel(self.path).read(sheet, axis, index_col, **kwargs).to_data(orient, empty, nana)
 
 
 class ExecExport:
