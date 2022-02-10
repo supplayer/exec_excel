@@ -11,8 +11,8 @@ class ExecImport:
         with open(self.path, 'r') as f:
             return load(f)
 
-    def from_excel(self, sheet='Sheet1', nana=None, orient='records', empty=False) -> iter:
-        return ExecExcel(self.path, sheet, nana).read(orient, empty)
+    def from_excel(self, sheet='Sheet1', axis=0, index_col=None, **kwargs) -> iter:
+        return ExecExcel(self.path).read(sheet, axis, index_col, **kwargs)
 
 
 class ExecExport:
@@ -23,5 +23,5 @@ class ExecExport:
         with open(self.path+f'{filename}.json', 'w') as f:
             dump(data, f)
 
-    def to_excel(self, data: list, filename, sheet='Sheet1', nana=None):
-        ExecExcel(self.path, sheet, nana).write(data, filename)
+    def to_excel(self, data: list, sheet='Sheet1', file_path=None, index=False, axis=0, **kwargs):
+        ExecExcel(self.path).data_format(data, axis).to_excel(sheet, file_path, index, **kwargs)
