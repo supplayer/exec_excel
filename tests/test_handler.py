@@ -1,4 +1,4 @@
-from exectools import ExecExport, ExecImport
+from exectools import *
 
 
 if __name__ == '__main__':
