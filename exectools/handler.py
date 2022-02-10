@@ -23,5 +23,5 @@ class ExecExport:
         with open(self.path+f'{filename}.json', 'w') as f:
             dump(data, f)
 
-    def to_excel(self, data: list, sheet='Sheet1', file_path=None, index=False, axis=0, **kwargs):
-        ExecExcel(self.path).data_format(data, axis).to_excel(sheet, file_path, index, **kwargs)
+    def to_excel(self, data: list, sheet='Sheet1', file_path=None, index=False, axis=0, index_col=None, **kwargs):
+        ExecExcel(self.path).append_row(data, sheet, axis, index_col).to_excel(sheet, file_path, index, **kwargs)
