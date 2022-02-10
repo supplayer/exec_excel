@@ -3,25 +3,49 @@ import time
 
 
 class ExecExcel:
-    def __init__(self, path, sheet='Sheet1', nana=None):
-        """
-        read xlsx and csv
-        :param path: str
-        :param sheet: str
-        :param nana: null display NaNa/None/''
-        """
-        self.path = path
-        self.sheet = sheet
-        if self.path.split('.')[-1] == 'csv':
-            self.excel_file = pd.read_csv(self.path)
-            ex_data = self.excel_file
-        else:
-            self.excel_file = pd.ExcelFile(self.path)
-            ex_data = self.excel_file.parse(self.sheet)
-        self.ex_data = ex_data.where(
-            ex_data.notnull(), nana)
+    """
+    read xlsx and csv
+    """
+    def __init__(self, file_path):
+        self.file_path = file_path
 
-    def read(self, orient='records', empty=False):
+    def read(self, sheet='Sheet1', axis=0, index_col=None, **kwargs):
+        df = pd.ExcelFile(self.file_path)
+        sheets = [sheet] if sheet else df.sheet_names
+        df_parse = df.parse(sheets, index_col=index_col, **kwargs)
+        frame_data = pd.concat(df_parse, axis=axis)
+        return ExcelResponse(frame_data, self.file_path)
+
+    def read_csv(self, **kwargs):
+        frame_data = pd.read_csv(self.file_path, **kwargs)
+        return ExcelResponse(frame_data, self.file_path)
+
+    def data_format(self, data: list, axis=0):
+        """
+        Write data to excel.
+        :param axis:
+        :param data: dict in list
+        """
+        fd = [pd.DataFrame(item, index=[0]) for item in data]
+        frame_data = pd.concat(fd, axis=axis)
+        return ExcelResponse(frame_data, self.file_path)
+
+    def append_row(self, data: list, sheet='Sheet1', axis=0, index_col=None, **kwargs):
+        df = pd.ExcelFile(self.file_path)
+        sheets = [sheet] if sheet else df.sheet_names
+        df_parse = df.parse(sheets, index_col=index_col, **kwargs)
+        frame_data = pd.concat(df_parse, axis=axis)
+        new_data = pd.concat([pd.DataFrame(item, index=[0]) for item in data], axis=axis)
+        frame_data = pd.concat([frame_data, new_data], axis=axis)
+        return ExcelResponse(frame_data, self.file_path)
+
+
+class ExcelResponse:
+    def __init__(self, frame_data, file_path: str):
+        self.frame_data = frame_data
+        self.file_path = file_path
+
+    def to_data(self, orient='records', empty=False, nana=None):
         """
         :param empty: if True show empty value
         :param orient:
@@ -33,9 +57,11 @@ class ExecExcel:
         orient=’series’ : {column -> Series(values)},
         orient=’split’  : {index -> [index], columns -> [columns], data -> [values]},
         }
+        :param nana: null display NaNa/None/''
         :return: dict : generator object
         """
-        data_load = self.ex_data.to_dict(orient=orient)
+        frame_data = self.frame_data.where(self.frame_data.notnull(), nana)
+        data_load = frame_data.to_dict(orient=orient)
         if orient == 'records':
             for index, value in enumerate(data_load):
                 yield {k: v for k, v in value.items()} if empty else {k: v for k, v in value.items() if v}
@@ -46,12 +72,12 @@ class ExecExcel:
                 else:
                     yield {index: value}
 
-    def write(self, data: list, filename):
+    def to_excel(self, sheet="Sheet1", file_path=None, index=False, **kwargs):
         """
         Write data to excel.
-        :param data: dict in list
-        :param filename: create excel file name
+        :param index:
+        :param file_path: save excel file name
+        :param sheet: excel sheet name
         """
-
-        pd_data = pd.concat([pd.DataFrame(item, index=[0]) for item in data], axis=0)
-        pd_data.to_excel(self.path+filename+f'_{int(time.time())}.xlsx', index=False, sheet_name=self.sheet)
+        file_path = file_path or self.file_path.rsplit('.')[0] + f'_{int(time.time())}.xlsx'
+        self.frame_data.to_excel(file_path, index=index, sheet_name=sheet, **kwargs)
