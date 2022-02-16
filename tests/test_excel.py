@@ -9,12 +9,12 @@ class TestExecExcel:
 
     @classmethod
     def test_read(cls, sheet='Sheet1'):
-        for i in cls.__excel_data.read(sheet=sheet).to_data():
+        for i in cls.__excel_data.read(sheet=sheet).extract_data():
             print(i)
 
     @classmethod
     def test_read_csv(cls):
-        for i in cls.__csv_data.read_csv().to_data():
+        for i in cls.__csv_data.read_csv().extract_data():
             print(i)
 
     @classmethod
@@ -27,12 +27,12 @@ class TestExecExcel:
 
     @classmethod
     def test_data_format(cls, data):
-        for i in cls.__excel_data.data_format(data=data).to_data():
+        for i in cls.__excel_data.data_format(data=data).extract_data():
             print(i)
 
     @classmethod
     def test_append_row(cls, data):
-        for i in cls.__excel_data.append_row(data=data).to_data():
+        for i in cls.__excel_data.append_row(data=data).extract_data():
             print(i)
 
     @classmethod
