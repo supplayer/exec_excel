@@ -49,7 +49,7 @@ class ExcelResponse:
         self.frame_data = frame_data
         self.file_path = file_path
 
-    def to_data(self, orient='records', empty=False, nana=None):
+    def extract_data(self, orient='records', empty=False, nana=None):
         """
         :param empty: if True show empty value
         :param orient:
