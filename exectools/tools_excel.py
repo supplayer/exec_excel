@@ -1,3 +1,4 @@
+from os.path import exists, expanduser
 import pandas as pd
 import time
 
@@ -7,7 +8,7 @@ class ExecExcel:
     read xlsx and csv
     """
     def __init__(self, file_path):
-        self.file_path = file_path
+        self.file_path = expanduser(file_path)
 
     def read(self, sheet='Sheet1', axis=0, index_col=None, **kwargs):
         df = pd.ExcelFile(self.file_path)
@@ -31,10 +32,13 @@ class ExecExcel:
         return ExcelResponse(frame_data, self.file_path)
 
     def append_row(self, data: list, sheet='Sheet1', axis=0, index_col=None, **kwargs):
-        df = pd.ExcelFile(self.file_path)
-        sheets = [sheet] if sheet else df.sheet_names
-        df_parse = df.parse(sheets, index_col=index_col, **kwargs)
-        frame_data = pd.concat(df_parse, axis=axis)
+        if exists(self.file_path):
+            df = pd.ExcelFile(self.file_path)
+            sheets = [sheet] if sheet else df.sheet_names
+            df_parse = df.parse(sheets, index_col=index_col, **kwargs)
+            frame_data = pd.concat(df_parse, axis=axis)
+        else:
+            frame_data = pd.DataFrame()
         new_data = pd.concat([pd.DataFrame(item, index=[0]) for item in data], axis=axis)
         frame_data = pd.concat([frame_data, new_data], axis=axis)
         return ExcelResponse(frame_data, self.file_path)
