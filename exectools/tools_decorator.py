@@ -96,7 +96,7 @@ class RunTime:
                 start = time.time()
                 try:
                     (cls.__rangetime(loop_times, n, func, loop_sleep, logger, show_short_result, sleep_func,
-                                     args, **kwargs)
+                                     *args, **kwargs)
                      if loop_times else
                      cls.__whiletime(flag, n, func, loop_sleep, logger, show_short_result, sleep_func, *args, **kwargs))
 
