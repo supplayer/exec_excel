@@ -13,15 +13,15 @@ class TimeSection:
     __datetime_format = "%Y:%m:%d:%H:%M:%S"
 
     @classmethod
-    def nowstamp_point(cls, time_delta: int = 0, time_type: str = "hours", res_func=int):
+    def nowstamp_point(cls, time_type_offset: int = 0, time_type: str = "hours", res_func=int):
         """
         :param time_type: days/hours/minutes/seconds
-        :param time_delta: timedelta offset
+        :param time_type_offset: timedelta offset
         :param res_func: format timestamp
         :return: timestamp
         """
-        time_delta = timedelta(**{time_type: time_delta})
-        timestamp = (datetime.now() + time_delta).timestamp()
+        time_type_offset = timedelta(**{time_type: time_type_offset})
+        timestamp = (datetime.now() + time_type_offset).timestamp()
         return cls.timestamp_point(timestamp, time_type, res_func)
 
     @classmethod
